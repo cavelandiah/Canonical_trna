@@ -13,3 +13,4 @@ fi
 ./get_summary_table.sh ${THR}
 ./plot_mutations.py ${THR}
 ./classification_reads.sh ${THR}
+./stats_classification.py ${THR} "1"
