@@ -9,9 +9,7 @@ if [[ -z "$THR" ]];then
     exit 1
 fi
 
-for f in G_i1 G_i3 G_i4
-#for f in G_i1 G_i2 G_i3 G_i4 G_i6 G_i7
-do
-    echo $f
-    ./get_summary_table.py $f ${THR} "1"
-done
+./convert_to_vector.sh ${THR}
+./get_summary_table.sh ${THR}
+./plot_mutations.py ${THR}
+./classification_reads.sh ${THR}

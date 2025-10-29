@@ -3,7 +3,7 @@
 import sys
 import pandas as pd
 import numpy as np
-from scipy.spatial.distance import hamming, cosine
+#from scipy.spatial.distance import hamming, cosine
 
 
 ## Defs
@@ -65,22 +65,21 @@ from scipy.spatial.distance import hamming, cosine
     # hdistance = hamming(ref,a) #It returns normalized value
     # return hdistance
 
-
+## Input
 sample = sys.argv[1]
 thres = sys.argv[2]
 test = int(sys.argv[3])
+
+## Output folder
+output_folder = "../results"
 if test == 0:
-    canonical_table_classified = pd.read_csv(f'Results/concatenated_{sample}_{thres}.csv',
+    canonical_table_classified = pd.read_csv(f'{output_folder}/concatenated_{sample}_{thres}.csv',
                                              low_memory=False)
-    mapping = pd.read_csv(f"Results/index_{sample}_{thres}.csv", sep="\t")
+    mapping = pd.read_csv(f"{output_folder}/index_{sample}_{thres}.csv", sep="\t")
 else:
-    mutation=sys.argv[4]
-    canonical_table_classified = pd.read_csv(f'Data/Simulations/SAM/concatenated_{sample}_{thres}_{mutation}.csv',
+    canonical_table_classified = pd.read_csv(f'{output_folder}/Test/concatenated_{sample}_{thres}.csv',
                                              low_memory=False)
-    mapping = pd.read_csv(f"Data/Simulations/SAM/index_{sample}_{thres}_{mutation}.csv", sep="\t")
-    #canonical_table_classified = pd.read_csv(f'Results/Test/concatenated_{sample}_{thres}.csv',
-    #                                         low_memory=False)
-    #mapping = pd.read_csv(f"Results/Test/index_{sample}_{thres}.csv", sep="\t")
+    mapping = pd.read_csv(f"{output_folder}/Test/index_{sample}_{thres}.csv", sep="\t")
 
 
 ### Calculate distances table
@@ -89,7 +88,7 @@ vec_cols = [c for c in canonical_table_classified.columns if str(c).endswith("_v
 # Canonical vector
 accessibility_vector = canonical_table_classified['Accessibility'].to_numpy(dtype=float)
 
-read_ids, cos_dists, hamm_dists, free_precisions, n_mut = [], [], [], [], []
+read_ids, cos_dists, hamm_dists, free_precisions, n_mut, read_len = [], [], [], [], [], []
 
 # map index->QNAME
 idx2qname = dict(zip(mapping["seq_idx"].astype(str) + "_vec", mapping["QNAME"]))
@@ -128,8 +127,12 @@ for col in vec_cols:
     # read id
     read_ids.append(idx2qname.get(col, col))
 
+    # read length (non-NaN positions)
+    read_len.append(int(covered_mask.sum()))
+
 distance_df = pd.DataFrame({
     'read': read_ids,
+    'len': read_len,
     #'cosine_distance': cos_dists,
     #'hamming_distance': hamm_dists,
     'precision_on_ref1': free_precisions,
@@ -138,10 +141,9 @@ distance_df = pd.DataFrame({
 })
 
 if test == 0:
-    distance_df.to_csv(f'Results/distance_{sample}_{thres}.csv', na_rep='NA',index=False)
+    distance_df.to_csv(f'{output_folder}/distance_{sample}_{thres}.csv', na_rep='NA',index=False)
 else:
-    distance_df.to_csv(f'Data/Simulations/SAM/distance_{sample}_{thres}_{mutation}.csv', na_rep='NA',index=False)
-    #distance_df.to_csv(f'Results/Test/distance_{sample}_{thres}.csv', na_rep='NA',index=False)
+    distance_df.to_csv(f'{output_folder}/Test/distance_{sample}_{thres}.csv', na_rep='NA',index=False)
 
 ## OLD
 # ## Calculare similarity table

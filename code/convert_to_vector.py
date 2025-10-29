@@ -201,27 +201,29 @@ def classify_vector(row, vector_column):
             classification[col] = 1
     return classification
 
-sample= sys.argv[1]
+# Input files
+sample = sys.argv[1]
 thres = sys.argv[2]
-test= int(sys.argv[3])
+test = int(sys.argv[3])
+ref_fasta ="../data/iMet.fa"
+alignment_fa ="../data/tRNAs_aln.fa"
+
+# Output folders
+out_folder = "../results/"
 
 # Test
 # G_i1= iMet_G_DMSO
 # G_i4= iMet_m1G_DMSO
 
 if test == 1:
-    mutation = sys.argv[4]
-    #sam=os.path.join('Data','Test',str(sample)+f"_{thres}.sam")
-    sam=os.path.join('Data','Simulations','SAM',f'reads_m{mutation}.sam')
+    #mutation = sys.argv[4]
+    #sam=os.path.join('Data','Simulations','SAM',f'reads_m{mutation}.sam')
+    sam=os.path.join('../data/test',str(sample)+f"_{thres}.sam")
 else:
     # Real data
     sam=os.path.join('Data',str(sample)+f"_{thres}.sam")
 
 df = load_sam_to_dataframe(sam, thres)
-
-ref_fasta="iMet.fa"
-alignment_fa="tRNAs_aln.fa"
-cluster_map="NA"
 ref_dict = SeqIO.to_dict(SeqIO.parse(ref_fasta, "fasta"))
 # Match positions with the CM model
 alignment_pos_dict =  match_cm_position(alignment_fa)
@@ -275,10 +277,9 @@ if total_reads > 0:
             "QNAME": g_df["QNAME"].values
             })
         if test == 0:
-            mapping.to_csv(f"Results/index_{sample}_{thres}.csv", sep="\t", index=False)
+            mapping.to_csv(f"{out_folder}/index_{sample}_{thres}.csv", sep="\t", index=False)
         else:
-            mapping.to_csv(f"Data/Simulations/SAM/index_{sample}_{thres}_{mutation}.csv", sep="\t", index=False)
-            #mapping.to_csv(f"Results/Test/index_{sample}_{thres}.csv", sep="\t", index=False)
+            mapping.to_csv(f"{out_folder}/Test/index_{sample}_{thres}.csv", sep="\t", index=False)
 
 canonical_ref = alignment_df.transpose().copy()
 canonical_ref.reset_index(inplace=True)
@@ -312,7 +313,6 @@ canonical_ref.replace(" ", pd.NA, inplace=True)
 
 # Automatically detect vector columns by excluding known non-vector columns
 vector_columns = [col for col in canonical_ref.columns if col not in non_vector_columns]
-
 # Apply the vector classification to each row
 classified_vectors = canonical_ref.apply(lambda row: classify_vector(row, vector_columns), axis=1)
 # Convert the resulting series of dictionaries into a DataFrame
@@ -322,10 +322,8 @@ classified_df = classified_df.add_suffix('_vec')
 canonical_table_classified = pd.concat([canonical_ref, classified_df], axis=1).iloc[:-1]
 # Write to Results:
 if test == 0:
-    canonical_table_classified.to_csv(f'Results/concatenated_{sample}_{thres}.csv',
+    canonical_table_classified.to_csv(f'{out_folder}/concatenated_{sample}_{thres}.csv',
                                       na_rep="NA",index=False)
 else:
-    canonical_table_classified.to_csv(f'Data/Simulations/SAM/concatenated_{sample}_{thres}_{mutation}.csv',
+    canonical_table_classified.to_csv(f'{out_folder}/Test/concatenated_{sample}_{thres}.csv',
                                       na_rep="NA",index=False)
-    #canonical_table_classified.to_csv(f'Results/Test/concatenated_{sample}_{thres}.csv',
-    #                                  na_rep="NA",index=False)
