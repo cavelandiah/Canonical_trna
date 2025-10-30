@@ -1,0 +1,228 @@
+configfile: "./config/config.yaml"
+
+import os
+import pandas as pd
+
+# Generate samples path
+samples_path = "/".join(
+        [str(config["project_path"]),
+         str(config["data_folder"]),
+         str(config["samples_file"])
+         ])
+
+data_path = "/".join(
+        [str(config["project_path"]),
+         str(config["data_folder"])
+         ])
+
+samples_df = pd.read_csv(samples_path, sep="\t|,", engine="python")
+# Dict of samples
+sample_dict = samples_df.to_dict(orient="index")
+sample_dict2 = samples_df.set_index('Sample_id').to_dict('dict')
+# Reeplace any space in column names to '_'
+samples_df.columns = samples_df.columns.str.replace("\s+", "_", regex=True)
+# Reference of Samples in the experiment
+SAMPLES = samples_df["Sample_id"].to_list()
+# Cells
+CELL = list(set(samples_df["Cell"].tolist()))
+
+# Samples by TTO:
+DM = samples_df[samples_df["Treatment"] == "DM"]["Sample_id"].to_list()
+NAI = samples_df[samples_df["Treatment"] == "NAI"]["Sample_id"].to_list()
+DMSO = samples_df[samples_df["Treatment"] == "DMSO"]["Sample_id"].to_list()
+DMS = samples_df[samples_df["Treatment"] == "DMS"]["Sample_id"].to_list()
+TTOS = samples_df["Treatment"].tolist()
+samples_dict = samples_df.set_index('Sample_id', drop=False).to_dict('index')
+SAMPLES_DICT = samples_dict
+SHAPE_NO_CONTROL = [tto for tto in ["NAI", "DMS"] if tto in TTOS]
+
+##
+def get_sample(treatment):
+    if treatment == "DMS":
+        return DMS
+    elif treatment == "NAI":
+        return NAI
+
+def read_reference_list():
+    filepath = os.path.join(config['project_path'], config['data_folder'], "list_references.txt")
+    if os.path.isfile(filepath):
+        with open(filepath, "r") as file:
+            return file.read().splitlines()
+    return []
+
+def generate_input(file_end, output_folder, mode):
+    input = []
+    if mode == "generate_table":
+        for sample1 in DMSO:
+            for treatment in SHAPE_NO_CONTROL:
+                for reference_seq in REFERENCE_SEQ_LIST:
+                    sample2_list = get_sample(treatment)
+                    for sample2 in sample2_list:
+                        file_concat = reference_seq + "_" + sample1 + "-" + sample2 + file_end
+                        input_path = os.path.join(config['project_path'], config['output_folder'], "shapemapper2", output_folder, treatment, file_concat)
+                        input.append(input_path)
+    elif mode == "generate_table_summary_ind":
+        # Calculate reactivities to DMSO mean vs. TTOs
+        for cell in CELL:
+            for treatment in SHAPE_NO_CONTROL:
+                for reference_seq in REFERENCE_SEQ_LIST:
+                    sample2_list = get_sample(treatment)
+                    for sample2 in sample2_list:
+                        sample_cell = SAMPLES_DICT[sample2]['Cell'] 
+                        if sample_cell == cell:
+                            file_concat = reference_seq + "_DMSO_" + cell + "-" + sample2 + "_" + cell + file_end
+                            input_path = os.path.join(config['project_path'], config['output_folder'], "shapemapper2", output_folder, treatment, file_concat)
+                            input.append(input_path)
+    elif mode == "generate_table_summary_means":
+        # Calculate reactivities to DMSO mean
+        for cell in CELL:
+            for treatment in SHAPE_NO_CONTROL:
+                for reference_seq in REFERENCE_SEQ_LIST:
+                    file_concat = reference_seq + "_DMSO_" + cell + "-" + treatment + "_" + cell + file_end
+                    input_path = os.path.join(config['project_path'], config['output_folder'], "shapemapper2", output_folder, treatment, file_concat)
+                    input.append(input_path)
+    elif mode == "generate_table_reactivity_means":
+        # Generate concatenation of reactivities, without TTO folder
+        for cell in CELL:
+            for treatment in SHAPE_NO_CONTROL:
+                for reference_seq in REFERENCE_SEQ_LIST:
+                    file_concat = reference_seq + "_DMSO_" + cell + file_end
+                    input_path = os.path.join(config['project_path'], config['output_folder'], "shapemapper2", output_folder, file_concat)
+                    input.append(input_path)
+    elif mode == "generate_table_reactivity_ind":
+        # Generate concatenation reactivities to DMSO mean vs. TTOs
+        for cell in CELL:
+            for treatment in SHAPE_NO_CONTROL:
+                for reference_seq in REFERENCE_SEQ_LIST:
+                    sample2_list = get_sample(treatment)
+                    for sample2 in sample2_list:
+                        sample_cell = SAMPLES_DICT[sample2]['Cell'] 
+                        if sample_cell == cell:
+                            file_concat = reference_seq + "_DMSO_" + cell + "-" + sample2 + "_" + cell + file_end
+                            input_path = os.path.join(config['project_path'], config['output_folder'], "shapemapper2", output_folder, treatment, file_concat)
+                            input.append(input_path)
+    elif mode == "concatenate":
+        for treatment in SHAPE_NO_CONTROL:
+            sample2_list = get_sample(treatment)
+            for sample2 in sample2_list:
+                file_concat = sample2 + file_end
+                input_path = os.path.join(config['project_path'], config['output_folder'], "shapemapper2", output_folder, treatment, file_concat)
+                input.append(input_path)
+    elif mode == "concatenate_summary":
+        # Concatenate by TTO+CELL
+        for treatment in SHAPE_NO_CONTROL:
+            for cell in CELL:
+                file_concat = treatment+"_"+cell + file_end
+                input_path = os.path.join(config['project_path'], config['output_folder'], "shapemapper2", output_folder, treatment, file_concat)
+                input.append(input_path)
+    elif mode == "concatenate_summary_ind":
+        # Concatenate by TTO+CELL
+        for cell in CELL:
+            for treatment in SHAPE_NO_CONTROL:
+                sample2_list = get_sample(treatment)
+                for sample2 in sample2_list:
+                    sample_cell = SAMPLES_DICT[sample2]['Cell'] 
+                    if sample_cell == cell:
+                        file_concat = sample2+"_"+cell + file_end
+                        input_path = os.path.join(config['project_path'], config['output_folder'], "shapemapper2", output_folder, treatment, file_concat)
+                        input.append(input_path)
+    elif mode == "generate_table_control":
+        #for treatment in DMSO:
+        for reference_seq in REFERENCE_SEQ_LIST:
+            for cell in CELL:
+                treatment = "DMSO"
+                file_concat = reference_seq + "_DMSO_" + cell + file_end
+                input_path = os.path.join(config['project_path'], config['output_folder'], "shapemapper2", output_folder, treatment, file_concat)
+                input.append(input_path)
+    elif mode == "generate_table_ttos":
+        for reference_seq in REFERENCE_SEQ_LIST:
+            for tto in SHAPE_NO_CONTROL:
+                for cell in CELL:
+                    file_concat = reference_seq + "_" + tto + "_" + cell + file_end
+                    input_path = os.path.join(config['project_path'], config['output_folder'], "shapemapper2", output_folder, tto, file_concat)
+                    input.append(input_path)
+    elif mode == "convert_format":
+        for sample1 in DMSO:
+            for treatment in SHAPE_NO_CONTROL:
+                for reference_seq in REFERENCE_SEQ_LIST:
+                    sample2_list = get_sample(treatment)
+                    for sample2 in sample2_list:
+                        file_concat = reference_seq + "_" + sample1 + "-" + sample2 + file_end
+                        input_path = os.path.join(config['project_path'], config['output_folder'], "shapemapper2", output_folder, treatment, file_concat)
+                        input.append(input_path)
+    return input
+
+
+REFERENCE_SEQ_LIST = read_reference_list()
+wildcard_constraints:
+    sample="[A-Z]_i[1-9]_[1-9]{2}",
+    reference_seq="[^_]+",
+
+# ploting parameters
+#CM = 1 / 2.54
+#font = {"family": "normal", "weight": "normal", "size": 7}
+
+# rules
+include: "rules/shapemapper.smk"
+#include: "rules/rnaframework.smk"
+#include: "rules/figures_manipulation.smk"
+
+rule all:
+    # Start from segemehl alignments and run shapemapper and rnaframework to
+    # get comparable reactivity profiles
+    # It assumes that mapped data is on data/ folder as sam file
+    input:
+        # shapemapper2
+        ##################################### Pre-process
+        # Convert SAM 1.4 to SAM 1.3: X and = to M
+        expand(os.path.join(config['project_path'], config['data_folder'], config['old_sam'], "{sample}.sam"), sample=SAMPLES),
+        ## Create reference file
+        os.path.join(config['project_path'], config['data_folder'], "list_references.txt"),
+        ## Split reference file
+        os.path.join(config['project_path'], config['data_folder'], config['split_reference_folder'], "success_split_files.txt"),
+        ### Split alignment files
+        expand(os.path.join(config['project_path'], config['data_folder'], config['split_alignment_file'], "success_split_sam_{sample}.txt"), sample=SAMPLES),
+        ########################################
+        ### Count mutations only if reference file exists, create *check file to process all full/empty files
+        generate_input("_reactivities.txt", config['reactivity_folder'], "generate_table"),
+        ### Concatenate
+        generate_input("_concatenated_react.txt", config['reactivity_folder'], "concatenate"),
+        ### Infer normalization values: HERE THE NORMALIZATION IS DONE BY THE COLUMN: Reactivity_profile
+        generate_input("_react_normalization_values.txt", config['reactivity_folder'], "concatenate"),
+        ### Generate normalized tables
+        generate_input("_react_norm.txt", config['reactivity_folder'], "generate_table"),
+        # ### Generate .shape, .map, .varna files
+        generate_input(".shape", config['reactivity_folder'], "generate_table"),
+        ### Plot secondary structure in png format
+        generate_input(".svg", config['plots_folder'], "generate_table"),
+        #generate_input(".pdf", config['plots_folder'], "convert_format"),
+        
+        ### Structural plots using VARNA
+        #expand(os.path.join(config['project_path'], config['output_folder'], "shapemapper2", config['plots_folder'], "{treatment}","{reference_seq}_{sample1}-{sample2}.png"), treatment="NAI", sample1=DMSO, sample2=NAI, reference_seq = reference_identificators),
+        #expand(os.path.join(config['project_path'], config['output_folder'], "shapemapper2", config['plots_folder'], "{treatment}","{reference_seq}_{sample1}-{sample2}.png"), treatment="DMS", sample1=DMSO, sample2=DMS, reference_seq = reference_identificators),
+        ### SHAPE-mapper default plots
+        #expand(os.path.join(config['project_path'], config['output_folder'], "shapemapper2", config['plots_folder'], "{treatment}","{reference_seq}_{sample1}-{sample2}.pdf"), treatment="NAI", sample1=DMSO, sample2=NAI, reference_seq = reference_identificators),
+        #### Concatenate plots
+        #expand(os.path.join(config['project_path'], config['output_folder'], "shapemapper2", config['plots_folder'], "{treatment}","{reference_seq}_ALL.png"), treatment="NAI", reference_seq=reference_identificators),
+        ##expand(os.path.join(config['project_path'], config['output_folder'], "shapemapper2", config['plots_folder'], "{treatment}","{reference_seq}_ALL.png"), treatment="DMS", reference_seq=reference_identificators),
+##        # It fails with NAI
+##        #expand(os.path.join(config['project_path'], config['output_folder'], "shapemapper2", config['plots_folder'], "{treatment}","{reference_seq}_{sample1}-{sample2}.pdf"), treatment="DMS", sample1=DMSO, sample2=DMS, reference_seq = reference_identificators),
+##
+##        ## Generate tables with energy parameters
+        #expand(os.path.join(config['project_path'], config['output_folder'], "shapemapper2", config['tables_folder'], "{treatment}","{reference_seq}_{sample1}-{sample2}_temp.txt"), treatment="NAI", sample1=DMSO, sample2=NAI, reference_seq = reference_identificators),
+        #expand(os.path.join(config['project_path'], config['output_folder'], "shapemapper2", config['tables_folder'], "{treatment}","{reference_seq}_{sample1}-{sample2}_temp.txt"), treatment="DMS", sample1=DMSO, sample2=DMS, reference_seq = reference_identificators),
+        #expand(os.path.join(config['project_path'], config['output_folder'], "shapemapper2", config['tables_folder'], "{treatment}","{reference_seq}_{sample1}-{sample2}_temp_distances.txt"), treatment="NAI", sample1=DMSO, sample2=NAI, reference_seq = reference_identificators),
+        #expand(os.path.join(config['project_path'], config['output_folder'], "shapemapper2", config['tables_folder'], "{treatment}","{reference_seq}_{sample1}-{sample2}_temp_distances.txt"), treatment="DMS", sample1=DMSO, sample2=DMS, reference_seq = reference_identificators),
+        ### Concatenate all tables by tRNA
+        #expand(os.path.join(config['project_path'], config['output_folder'], "shapemapper2", config['tables_folder'], "{treatment}", "{reference_seq}_tab.txt"), reference_seq=reference_identificators, treatment="NAI"),
+        #expand(os.path.join(config['project_path'], config['output_folder'], "shapemapper2", config['tables_folder'], "{treatment}", "{reference_seq}_tab.txt"), reference_seq=reference_identificators, treatment="DMS"),
+##        expand(os.path.join(config['project_path'], config['output_folder'], "shapemapper2", config['tables_folder'], "{treatment}", "{reference_seq}_dist.txt"), reference_seq=reference_identificators, treatment="NAI"),
+##        expand(os.path.join(config['project_path'], config['output_folder'], "shapemapper2", config['tables_folder'], "{treatment}", "{reference_seq}_dist.txt"), reference_seq=reference_identificators, treatment="DMS"),
+##
+        ### rnaframework
+        ##NAI
+        ##expand(os.path.join(config['project_path'], config['output_folder'], "rnaframework", config['count_folder'], "{treatment}","{sample}.plus.rc"), sample=NAI, treatment="NAI"),
+        ##DMS
+        ##expand(os.path.join(config['project_path'], config['output_folder'], "rnaframework", config['count_folder'], "{treatment}","{sample}.plus.rc"), sample=DMS, treatment="DMS"),
+        ##Normalize
+        ##expand(folder(os.path.join(config['project_path'], config['output_folder'], "rnaframework", config['normalization_folder'], {treatment}), treatment=["NAI","DMS"])
