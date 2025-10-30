@@ -1,0 +1,10 @@
+File_name,Cell,Treatment,Concentration,Sample_name,Sample_id,Barcode,Species,Replica,Species_tag,Design,Time
+G_i1_75.fastq.gz,iMetCATg,DMSO,0.5,iMet_G_DMSO,G_i1_75,atcgt,Human,1,Hsap,Control_Neg,NA
+G_i1_75.fastq.gz,iMetCATg,DMSO,0.5,iMet_G_DMSO,G_i1_75_compatible,atcgt,Human,1,Hsap,Control_Neg,NA
+G_i1_75.fastq.gz,iMetCATg,DMSO,0.5,iMet_G_DMSO,G_i1_75_noncompatible,atcgt,Human,1,Hsap,Control_Neg,NA
+G_i3_75.fastq.gz,iMetCATg,DMS,0.5,iMet_G_DMS,G_i3_75,gcata,Human,1,Hsap,Control_Neg,NA
+G_i3_75.fastq.gz,iMetCATg,DMS,0.5,iMet_G_DMS,G_i3_75_compatible,gcata,Human,1,Hsap,Control_Neg,NA
+G_i3_75.fastq.gz,iMetCATg,DMS,0.5,iMet_G_DMS,G_i3_75_noncompatible,gcata,Human,1,Hsap,Control_Neg,NA
+G_i4_75.fastq.gz,iMetCATm1g,DMSO,0.5,iMet_m1G_DMSO,G_i4_75,tctag,Human,1,Hsap,Control_Neg,NA
+G_i4_75.fastq.gz,iMetCATm1g,DMSO,0.5,iMet_m1G_DMSO,G_i4_75_compatible,tctag,Human,1,Hsap,Control_Neg,NA
+G_i4_75.fastq.gz,iMetCATm1g,DMSO,0.5,iMet_m1G_DMSO,G_i4_75_noncompatible,tctag,Human,1,Hsap,Control_Neg,NA

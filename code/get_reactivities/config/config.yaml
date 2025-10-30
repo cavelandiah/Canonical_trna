@@ -1,0 +1,299 @@
+#samples (required input!)
+#-------------------------
+project_path: '/scr/fluidspace/cavelandiah/Projects/Canonical_trna/code/get_reactivities'
+data_folderc: '/scr/fluidspace/cavelandiah/Projects/Canonical_trna/code/get_reactivities/data/'
+results_folder: '/scr/fluidspace/cavelandiah/Projects/Canonical_trna/code/get_reactivities/results'
+# Key folders
+data_folder: 'data'
+index_folder: 'Indexes'
+output_folder: 'results'
+quality_control_folder: 'qc'
+multimappers: 'multimappers'
+## key folders rnaframework
+count_folder: 'rf-count'
+normalization_folder: 'rf-norm'
+## Key folders shapemapper2
+tables_folder: "energy_tab-shapemapper"
+tables_folder_sum: "energy_tab-shapemapper-sum"
+tables_folder_sum_ind: "energy_tab-shapemapper-sum-ind"
+plots_folder: 'ss-shapemapper'
+reactivity_folder: 'reactivities-shapemapper'
+reactivity_folder_summarised: 'reactivities-shapemapper-summarised'
+reactivity_folder_summarised_ind: 'reactivities-shapemapper-summarised-ind'
+mutation_folder: 'mutations-shapemapper'
+mutation_folder_summary: 'mutations-shapemapper-summary'
+split_reference_folder: 'Split_reference'
+split_alignment_file: 'Split_alignments'
+reference_split_file: 'list_references.txt'
+# Key files with information about the clusters
+references_path: 'build_references/results/Reference_genome'
+clusters_path: 'cluster'
+clusters_map_file: 'clusters-editdist-10.yaml'
+clusters_name_file: 'clusternames-editdist-10.yaml'
+mapping_path: 'mapping'
+## Trimming steps
+# Remove DNA adapter
+trimming_folder1: "trimming_preliminary"
+trimming_folder2: "trimming_adapter_3_end"
+trimming_folder3: "trimming_adapter_UMI"
+trimming_folder4: "trimming_universal_adapter"
+trimming_folder5: "trimming_quality"
+trimming_folder6: "trimming_polyT_5_end"
+
+####
+data_folder_filter1: "cleaning" 
+final_reads_to_map: "best_quality_reads"
+mapping_folder_2: "mapping_to_viz_test"
+mapping_folder: "mapping_best"
+mapping_folder_3: "mapping_best"
+mapping_folder_4: "mapping_best_D2"
+mapping_folder_5: "mapping_best_EX"
+mapping_folder_bowtie: "mapping_bowtie"
+frequencies_folder: "frequencies_count"
+fastq_mapped_folder: 'fastq_mapped_best'
+samples_file: "samples_file_updated.csv"
+samples_file_columns:
+  sample_name : 'Sample_name'
+  sample_id_name : 'Sample_id'
+fastq_screen_config:
+  config: "/home/mescalin/cavelandiah/bin/FastQ-Screen-0.15.2/FastQ_Screen_Genomes/fastq_screen.conf"
+  threads: 8
+fastq_screen_contamination:
+  base: "/home/mescalin/cavelandiah/bin/FastQ-Screen-0.15.2/FastQ_Screen_Genomes/" 
+  adapters: "Adapters"
+  arabidopsis: "Arabidopsis"
+  drosophila: "Drosophila"
+  e_coli: "E_coli"
+  lambda: "Lambda"
+  mitochondria: "Mitochondria"
+  mouse: "Mouse"
+  rat: "Rat"
+  rrna: "rRNA"
+  vectors: "Vectors"
+  phix: "PhiX"
+  worm: "Worm"
+  yeast: "Yeast"
+  illumina: "Illumina" # Extracted from Trimmmomatic Version 0.40
+selected_contamination: "MT,Worm,Ecoli,Arabidopsis,Yeast,PhiX,Vectors,rRNA"
+
+#Reference genome data (required input!)
+#-------------------------------------------
+#Pichot
+#This is the raw reference to be tested
+trna_reference_pichot: "Merged_reference_with_other_database_Homo_sapiens.fa"
+#raw_trna_reference: "selected_refs.fa"
+#trna_reference: "selected_refs.fa"
+#trna_reference_bowtie: "selected_refs.fa"
+# Selected representative sequences from clusters
+raw_trna_reference: "tRNAs_most_expressed.fa"
+# With N at the end
+trna_reference: "tRNAs_expanded.fa"
+# Without N at the end
+trna_reference_original: "tRNAs_original.fa"
+trna_reference_original_len: "tRNAs_expanded.fa.len"
+trna_reference_bowtie: "tRNAs_most_expressed.fa"
+# Others
+raw_reads_folder: 'raw/raw_reads'
+# tRNA alignments to CM
+trna_alignment_CM: 'manual_tRNAs.fa'
+natural_modification_table: 'tRNAs_most_expressed_natural_structures.txt'
+natural_structures_table: 'Natural_tRNAs'
+
+merged_plots_folder: 'merged_plots'
+merged_plots_summ_folder: 'merged_plots_sum'
+merged_plots_ind_folder: 'merged_plots_ind'
+
+
+alignment_path: 'rfam_alignment'
+# Folders:
+split_reference_folder: 'Split_reference'
+
+#tRNA specific models RFAM
+rfam_alignment: '../Data/RF00005.stockholm.txt'
+rfam_cm: '../Data/RF00005.cm'
+
+# Homo sapiens annotations
+species_name: 'Homo_sapiens'
+species_assembly: 'hg38'
+
+# MT sequence name from databases: Download manually
+mitochondrial_tRNAs_from_mt_tRNADB: 'mt_from_tRNAdb_homo_sapiens.fst'
+
+# Analyses
+# Folders included in the preliminary cleaning:
+Treatment_all: ['qc', 'trimming_preliminary', 'trimming_adapter_3_end','trimming_adapter_UMI', 'trimming_universal_adapter','trimming_quality', 'trimming_polyT_5_end','best_quality_reads']
+Treatment: ['trimming_preliminary', 'trimming_adapter_3_end','trimming_adapter_UMI', 'trimming_universal_adapter','trimming_quality', 'trimming_polyT_5_end','best_quality_reads']
+Mapping_folders: ['mapping_best','mapping_best_D2','mapping_Pichot_ref','mapping_Pichot_ref_D2','mapping_bowtie']
+Additional_TTO: ['fastq_mapping_best']
+
+# Cluster threshold
+cluster_threshold: 8
+
+# TODO list: CAVH
+# - Build an enviroment.yaml file
+# - Get rid of the hard-coded references
+# - Setup a common folder structure
+#   - Create a rule to create automatically the directory structure: dir as an output
+# - What is the order of the rules?
+# - Let the program to have a modular order?
+# - Should we add some messages on the workflow?/onsucess/onerror
+# - Addition of log files?
+# - Addition of protected/temporal files?
+# - Use ensure() to check non-emptyness of key files
+# - use symlinks for files
+# - retries() when downloading data
+# - Try to add data-dependent conditions
+# - Reeplace some rules by wrappers?
+#raw reference genome data (required input!)
+#-------------------------------------------
+
+assembly_id: 'GCF_000002035.6_GRCz11'
+mitochondrial_accession: 'NC_002333.2'
+hc_genomic_tRNAs_from_GtRNAdb: 'raw/references/danRer11-tRNAs/danRer11-mature-tRNAs.fa'
+downloaded_tRNAscanSE_summary: 'raw/references/danRer11-tRNAs/danRer11-tRNAs-detailed.out'
+downloaded_tRNAscanSE_name_mapping: 'raw/references/danRer11-tRNAs/danRer11-tRNAs_name_map.txt'
+housekeeping_refs: 'raw/references/houskeeping.fa' #TODO: currently deactivated; see rules in mapping.smk
+
+#processed reference genome
+#-------------------------
+ref_fasta_folder: 'resources/references/non-redundant'
+genomic_refs: 'resources/references/non-redundant/genomic_fullScan.fa' # "all" tRNAscanSE predictions
+genomic_split_hc_refs: 'resources/references/non-redundant/genomic_fullScan_highconfidence.fa'
+genomic_split_additional_refs: 'resources/references/non-redundant/genomic_fullScan_additional.fa'
+genomicBS_refs: 'resources/references/non-redundant/genomicBS_fullScan.fa'
+#genomic_refs: 'resources/references/non-redundant/genomic_hc.fa' # highconfidence tRNAscanSE predictions
+#genomicBS_refs: 'resources/references/non-redundant/genomicBS_hc.fa'
+mitochondrial_refs: 'resources/references/non-redundant/mitochondrial_tRNADB.fa'
+#mitochondrial_refs: 'resources/references/non-redundant/mitochondrial_gff.fa' # annotation errors!
+#housekeeping_refs: 'resources/references/non-redundant/housekeeping.fa'
+all_tRNAs_refs: 'resources/references/non-redundant/tRNAs.fa'
+seleceted_refs: 'resources/references/selected_refs.fa'
+manual_refs: 'resources/references/manual_refs.fa'
+
+#tRNA covariance model data (required input!)
+#--------------------------------------------
+min_raw_abundance_count_for_alignment: [['max all count', 10]]
+min_raw_abundance_refs: 'resources/references/min_raw_abundance_tRNAs.fa'
+  #rfam_alignment: 'raw/canonical_tRNA/RF00005.stockholm.txt'
+  #rfam_cm: 'raw/canonical_tRNA/RF00005.cm'
+canonical_positions_rfam_alignment : ["1", "2", "3", "4", "5", "6", "7", "8", "-",
+         "9", "-", "10", "11", "12", "13", "14", "15", "16", "17", "-", "17a",
+         "18", "19", "20", "20a", "20b", "-", "21", "22", "23", "24", "25",
+         "26", "-", "27", "-", "28", "29", "30", "31", "32", "-", "33", "34",
+         "35", "36", "37", "38", "39", "40", "41", "42", "-", "43", "44", "45",
+         "e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "e",
+         "e", "e", "e", "e", "e", "e", "e", "e", "e", "e", "46", "47", "-",
+         "-", "48", "49", "50", "51", "-", "52", "53", "54", "-", "55", "56",
+         "57", "-", "58", "59", "-", "60", "61", "62", "63", "64", "-", "65",
+         "-", "66", "67", "68", "69", "70", "71", "72", "-", "73"] #currently not used
+
+#refernce alignments
+#-------------------
+mitochondrial_alignment: 'resources/references/alignment/mitochondrial.fa'
+genomic_hc_alignment: 'resources/references/alignment/genomic_hc.fa'
+genomic_additional_alignment: 'resources/references/alignment/genomic_additional.fa'
+all_tRNAs_alignment: 'resources/references/alignment/tRNAs.fa'
+min_raw_abundance_alignment: 'resources/references/alignment/min_raw_abundance_tRNAs.fa'
+selected_alignment: 'resources/references/alignment/selected_tRNAs.fa'
+old_sam: 'old_sam_converted'
+
+
+# canonical_positions in alignment
+# 20a, 20b, 17a, 45-46
+
+
+#reads preprocessing
+#-------------------
+
+#max ployT after BS in ref: 18 in Lys-NNN-690; 15 in Phe-NNN-111; 13 in Leu-NNN-504 and Gly-NNN-1183;
+#max polyT after BS in high confidence refs: 10 in Ser and Leu
+#max ployT in DM in high confidence: 5 (Lys,Gly,Pro)
+#max ployT in DM in all ref: 8
+
+
+#mapping index
+#-------------
+index: 'resources/index/full.idx'
+bs_index:
+  ct: 'resources/index/full.ctidx'
+  ga: 'resources/index/full.gaidx'
+selected_index: 'resources/index/selected.idx'
+selected_bs_index:
+  ct: 'resources/index/selected.ctidx'
+  ga: 'resources/index/selected.gaidx'
+
+
+#min coverage cutoff after random assignment for getting high coverage refernces
+#-------------------------------------------------------------------------------
+#min_coverage_per_ref: [['max all count', 500],['max unique count', 20]] # connected with or
+#min_coverage_per_ref: [['max max fraction', 0.0005],['max max count', 500]] # connected with or
+min_coverage_per_ref: [['max max fraction', 0.0005]] # connected with or
+
+
+
+#clustering
+#----------
+cluster_method: 'editdist'
+editdist_cluster_cutoff: 4
+toplevel_multimapper_cluster_fraction: 0.5
+
+
+#percentage cutoff for minimum refernce set computation
+#----------------------------------------------------
+#max_coverage_selection_cutoff: 10
+
+#reads_prefilter
+reads_filter: 'umi' # 'umi', 'none', 'cigar', umicigar
+#reads_filter: 'none'
+
+#abundance analysis
+abundance_score: 'random fraction'
+abundance_heatmap_cutoff: 0.002
+manual_cluster_recovery: ['SeC-TCA[1.0](14)']
+clusters_to_remove: [26,25,20,13,10] #'Gly-CCC(26)', 'Lys-CTT(25)','Thr-AGT(10)'', and Ser-CGA(13)]
+
+# reference set to use
+ref_set: 'selected' # 'raw', 'selected'
+#ref_set: 'raw'
+
+
+
+
+
+#coverage plot
+cov_plot:
+  min_coverage: 1000
+replicate_markes: ['o', 's', '^', 'X', '+', 'D']
+#replicate_markes: ['o', 'o', 'o', 'o', 'o', 'o']
+
+
+# probes_scan
+#------------
+probes_tsv: 'config/probes.tsv'
+intarna_args: [
+        "-n",
+        "3", # max number of prdicted suboptimals
+        "--outOverlap",
+        "Q", # allowed in both ... B; allowed in none ... N
+        "--outMaxE",
+        "0",
+        "--outDeltaE",
+        "6",
+        "--noseed",
+        "--tAccW",
+        "0",
+        "--tAccL",
+        "0",
+        "--qAccW",
+        "0",
+        "--qAccL",
+        "0",
+        "--mode",
+        "M",  # M ... exact mode; H ... heuristic, default
+        "--model",
+        "S",  # S ... single side, mfe; X ... single side, mfe, seed extension
+        "--tIntLenMax",
+        "30",
+        "--qIntLenMax",
+        "30",
+    ]
