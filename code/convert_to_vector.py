@@ -216,13 +216,12 @@ out_folder = "../results/"
 # G_i4= iMet_m1G_DMSO
 
 if test == 1:
-    #mutation = sys.argv[4]
-    #sam=os.path.join('Data','Simulations','SAM',f'reads_m{mutation}.sam')
-    sam=os.path.join('../data/test',str(sample)+f"_{thres}.sam")
+    input_folder='../data/test'
 else:
     # Real data
-    sam=os.path.join('Data',str(sample)+f"_{thres}.sam")
+    input_folder='../data/raw'
 
+sam = os.path.join(f'{input_folder}',str(sample)+f"_{thres}.sam")
 df = load_sam_to_dataframe(sam, thres)
 ref_dict = SeqIO.to_dict(SeqIO.parse(ref_fasta, "fasta"))
 # Match positions with the CM model
