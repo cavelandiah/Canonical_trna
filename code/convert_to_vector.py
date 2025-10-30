@@ -275,10 +275,10 @@ if total_reads > 0:
             "seq_idx": alignment_df.index,
             "QNAME": g_df["QNAME"].values
             })
-        if test == 0:
-            mapping.to_csv(f"{out_folder}/index_{sample}_{thres}.csv", sep="\t", index=False)
-        else:
+        if test == 1:
             mapping.to_csv(f"{out_folder}/Test/index_{sample}_{thres}.csv", sep="\t", index=False)
+        else:
+            mapping.to_csv(f"{out_folder}/index_{sample}_{thres}.csv", sep="\t", index=False)
 
 canonical_ref = alignment_df.transpose().copy()
 canonical_ref.reset_index(inplace=True)
