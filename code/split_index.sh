@@ -9,8 +9,9 @@ if [[ -z "$THR" ]];then
     exit 1
 fi
 
-#for f in G_i1 G_i2 G_i3 G_i4 G_i6 G_i7;do
-for f in G_i1 G_i3 G_i4;do
-    echo "Subset of $f with $THR threshold"
-    ./subset_reads.py $f ${THR}
+for f in G_i1 G_i3 G_i4
+#for f in G_i1 G_i2 G_i3 G_i4 G_i6 G_i7
+do
+    echo "$f and $THR"
+    ./split_index.py $f $THR "1"
 done

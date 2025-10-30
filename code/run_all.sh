@@ -14,3 +14,5 @@ fi
 ./plot_mutations.py ${THR}
 ./classification_reads.sh ${THR}
 ./stats_classification.py ${THR} "1"
+./split_index.sh ${THR}
+./filter_by_qname_sam.sh ${THR} "1"

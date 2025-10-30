@@ -6,8 +6,9 @@ import sys
 
 sample= sys.argv[1]
 thres = sys.argv[2]
-sam=os.path.join('Data',str(sample)+".sam")
-outsam=os.path.join('Data',str(sample)+f"_{thres}.sam")
+source_folder="../data"
+sam=os.path.join(f'{source_folder}',str(sample)+".sam")
+outsam=os.path.join(f'{source_folder}',str(sample)+f"_{thres}.sam")
 
 # Open the input SAM file
 with pysam.AlignmentFile(sam, "r") as infile, pysam.AlignmentFile(outsam, "w", header=infile.header) as outfile:
