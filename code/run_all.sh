@@ -2,17 +2,22 @@
 
 set -euo pipefail
 
-THR="${1:-}" # Check THR is provided
+THR="${1:-}"
+TEST="${2:-}"
 
 if [[ -z "$THR" ]];then
     echo "Missing length threshold"
     exit 1
 fi
+if [[ -z "$TEST" ]];then
+    echo "Missing switch"
+    exit 1
+fi
 
-./convert_to_vector.sh ${THR}
-./get_summary_table.sh ${THR}
-./plot_mutations.py ${THR}
-./classification_reads.sh ${THR}
-./stats_classification.py ${THR} "1"
-./split_index.sh ${THR}
-./filter_by_qname_sam.sh ${THR} "1"
+./convert_to_vector.sh ${THR} ${TEST}
+./get_summary_table.sh ${THR} ${TEST}
+./plot_mutations.py ${THR} ${TEST}
+./classification_reads.sh ${THR} ${TEST}
+./stats_classification.py ${THR} ${TEST}
+./split_index.sh ${THR} ${TEST}
+./filter_by_qname_sam.sh ${THR} ${TEST}

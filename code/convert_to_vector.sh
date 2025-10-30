@@ -3,9 +3,14 @@
 set -euo pipefail
 
 THR="${1:-}" # Check THR is provided
+TEST="${2:-}" # Check THR is provided
 
 if [[ -z "$THR" ]];then
     echo "Missing length threshold"
+    exit 1
+fi
+if [[ -z "$TEST" ]];then
+    echo "Missing switch"
     exit 1
 fi
 
@@ -13,5 +18,5 @@ fi
 for f in G_i1 G_i3 G_i4
 do
     echo $f
-    ./convert_to_vector.py $f ${THR} 1
+    ./convert_to_vector.py $f ${THR} ${TEST}
 done

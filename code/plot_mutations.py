@@ -18,9 +18,16 @@ def classify_mut(x):
 
 # Input
 thres = sys.argv[1]
-input_folder='../results/Test'
-# Output
-output_folder="../results/Test"
+test= sys.argv[2]
+
+if test == 1:
+    input_folder='../results/Test'
+    # Output
+    output_folder="../results/Test"
+else:
+    input_folder='../results'
+    # Output
+    output_folder="../results"
 
 all_data = []
 experiments = ['G_i1','G_i2','G_i3','G_i4','G_i6','G_i7']
