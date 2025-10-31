@@ -187,13 +187,13 @@ rule all:
         generate_input("_reactivities.txt", config['reactivity_folder'], "generate_table"),
         #### Concatenate
         generate_input("_concatenated_react.txt", config['reactivity_folder'], "concatenate"),
-        #### Infer normalization values: HERE THE NORMALIZATION IS DONE BY THE COLUMN: Reactivity_profile
+        ##### Infer normalization values: HERE THE NORMALIZATION IS DONE BY THE COLUMN: Reactivity_profile
         generate_input("_react_normalization_values.txt", config['reactivity_folder'], "concatenate"),
-        #### Generate normalized tables
+        ##### Generate normalized tables
         generate_input("_react_norm.txt", config['reactivity_folder'], "generate_table"),
-        ## ### Generate .shape, .map, .varna files
+        ### ### Generate .shape, .map, .varna files
         generate_input(".shape", config['reactivity_folder'], "generate_table"),
-        #### Plot secondary structure in png format
+        ##### Plot secondary structure in png format
         generate_input(".svg", config['plots_folder'], "generate_table"),
         ##generate_input(".pdf", config['plots_folder'], "convert_format"),
         

@@ -47,10 +47,14 @@ TP = (X.T @ allowed_mask.values).astype(int)
 FN = ((1 - X).T @ allowed_mask.values).astype(int)
 FP = (X.T @ non_allowed_mask.values).astype(int)
 TN = ((1 - X).T @ non_allowed_mask.values).astype(int)
+mutations = X.sum(axis=0).astype(int).values
+read_len = (~df[vec_cols].isna()).sum(axis=0).astype(int).values
 
 # Get summary
 summary_df = pd.DataFrame({
     "vec": vec_cols,
+    'Mutations': mutations,
+    'Lenght': read_len,
     "TP": TP,
     "FN": FN,
     "FP": FP,
@@ -59,7 +63,12 @@ summary_df = pd.DataFrame({
     "FPR": FP / non_allowed_n if non_allowed_n else np.nan,
     "allowed_sites": allowed_n,
     "non_allowed_sites": non_allowed_n,
-    "group": np.where(FP > 0, "Noncompatible", "Compatible"),
+    "group": np.select(
+        [mutations == 0, FP > 0],
+        ["Non-informative", "Noncompatible"],
+        default="Compatible"
+    ),
+    #"group": np.where(FP > 0, "Noncompatible", "Compatible"),
     "perfect_match": (FP == 0) & (FN == 0),
     "sample": sample
 })

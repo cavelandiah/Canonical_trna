@@ -35,20 +35,25 @@ if missing_index:
     raise ValueError(f"Missing columns in df_index: {missing_index}")
 
 # select vec by group
-compatible_summary = summary_df.loc[summary_df["group"] == "allowed_only", "vec"]
-noncompatible_summary = summary_df.loc[summary_df["group"] == "violates_non_allowed", "vec"]
+compatible_summary = summary_df.loc[summary_df["group"] == "Compatible", "vec"]
+noncompatible_summary = summary_df.loc[summary_df["group"] == "Noncompatible", "vec"]
+noninformative_summary = summary_df.loc[summary_df["group"] == "Non-informative", "vec"]
 
 compat_idx = clean_vec_to_int(compatible_summary)
 noncompat_idx = clean_vec_to_int(noncompatible_summary)
+noninfcompat_idx = clean_vec_to_int(noninformative_summary)
 
 df_index = df_index.copy()
 df_index["seq_idx"] = pd.to_numeric(df_index["seq_idx"], errors="coerce").astype("Int64")
 
 comp_names = df_index.loc[df_index["seq_idx"].isin(compat_idx), "QNAME"]
 noncomp_names = df_index.loc[df_index["seq_idx"].isin(noncompat_idx), "QNAME"]
+noninf_names = df_index.loc[df_index["seq_idx"].isin(noninfcompat_idx), "QNAME"]
 
 df_index_compatible = f"{input_folder}/index_{sample}_{threshold}_compatible.csv"
 df_index_noncompatible = f"{input_folder}/index_{sample}_{threshold}_noncompatible.csv"
+df_index_noninformative = f"{input_folder}/index_{sample}_{threshold}_noninformative.csv"
 
 comp_names.to_csv(df_index_compatible, index=False, header=False)
 noncomp_names.to_csv(df_index_noncompatible, index=False, header=False)
+noninf_names.to_csv(df_index_noninformative, index=False, header=False)

@@ -24,7 +24,8 @@ experiments = ['G_i1','G_i2','G_i3','G_i4','G_i6','G_i7']
 
 mapping = {
     "Compatible": "Compatible",
-    "Noncompatible": "Non-compatible"
+    "Noncompatible": "Non-compatible",
+    "Non-informative":'Non-informative'
 }
 experiment_map = {
     'G_i1': 'iMet_G_DMSO',
@@ -108,6 +109,7 @@ ax = sns.barplot(
     x='Experiment_name',
     y='proportion',
     hue='group',
+    hue_order=['Non-informative','Non-compatible','Compatible']
     #errorbar='sd'
 )
 plt.xticks(rotation=45, ha='right', fontsize=10)
