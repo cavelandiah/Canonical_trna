@@ -16,45 +16,50 @@ else:
     # Real data
     path_file = f"{input_folder}/concatenated_{sample}_{threshold}.csv"
 
-# --- 1) Read only required columns in one go ---
+# Get Accessibility and _vec columns
 usecols = lambda c: c == "Accessibility" or c.endswith("_vec")
 df = pd.read_csv(path_file, usecols=usecols, dtype=np.float32, low_memory=False)
 df["Sample"] = sample
 
-# --- 2) Pre-compute masks once ---
+# df['Accessibility'] is float32 -> np.int8 (0,1)
 acc = pd.to_numeric(df["Accessibility"], errors="coerce").fillna(0).astype(np.int8)
 allowed_mask = acc == 1
 non_allowed_mask = ~allowed_mask
-
 allowed_n = int(allowed_mask.sum())
-non_allowed_n = len(acc) - allowed_n  # faster than non_allowed_mask.sum()
+non_allowed_n = len(acc) - allowed_n
 
-# --- 3) Collect vector columns ---
+# Collect vector columns ---
 vec_cols = [c for c in df.columns if c.endswith("_vec")]
 
-# --- 4) Pre-convert all vec columns to int8 matrix ---
+# Pre-convert all vec columns to int8 matrix: on positions that are not numeric, or na,
+# it converts to 0, in this analyses I do care about the positions of 1, other missing or 0s
+# positions doesn't matter.
 X = df[vec_cols].apply(pd.to_numeric, errors="coerce").fillna(0).astype(np.int8)
 
-# --- 5) Compute confusion-like metrics vectorized ---
+# Compute confusion-like metrics vectorized:
+# TP: Number of positions that are free (1) in both: the canonical structure (allowed_mask) and in the read vector (X).
+# FN: Number of positions that are free (1) in the canonical structure but not free (0) in the read vector (missed free positions).
+# FP: Number of positions that aren't free (0) in the canonical structure (not_allowed_mask) and free in the read vector (X).
+# TN: Number of positions that aren't free (0) in both: the canonical structure (not_allowed_mask) and free in the read vector (X).
+# TPR_allowed measures how many canonical free positions were correctly identified as free in the vector.
+# FPR_non_allowed measures how often the vector falsely marks a paired canonical position as free.
 TP = (X.T @ allowed_mask.values).astype(int)
-FN = (X.shape[0] - X.T @ allowed_mask.values).astype(int)  # we'll fix this below
-# Correction: FN counts 0s in allowed → sum((X==0) & allowed_mask)
 FN = ((1 - X).T @ allowed_mask.values).astype(int)
 FP = (X.T @ non_allowed_mask.values).astype(int)
 TN = ((1 - X).T @ non_allowed_mask.values).astype(int)
 
-# --- 6) Normalize and assemble results ---
+# Get summary
 summary_df = pd.DataFrame({
     "vec": vec_cols,
-    "TP_allowed_1match": TP,
-    "FN_allowed_0mismatch": FN,
-    "FP_nonallowed_1violation": FP,
-    "TN_nonallowed_0match": TN,
-    "TPR_allowed": TP / allowed_n if allowed_n else np.nan,
-    "FPR_non_allowed": FP / non_allowed_n if non_allowed_n else np.nan,
+    "TP": TP,
+    "FN": FN,
+    "FP": FP,
+    "TN": TN,
+    "TPR": TP / allowed_n if allowed_n else np.nan,
+    "FPR": FP / non_allowed_n if non_allowed_n else np.nan,
     "allowed_sites": allowed_n,
     "non_allowed_sites": non_allowed_n,
-    "group": np.where(FP > 0, "violates_non_allowed", "allowed_only"),
+    "group": np.where(FP > 0, "Noncompatible", "Compatible"),
     "perfect_match": (FP == 0) & (FN == 0),
     "sample": sample
 })

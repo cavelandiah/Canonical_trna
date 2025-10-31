@@ -9,8 +9,8 @@ import os
 
 # Replace group labels
 mapping = {
-    "allowed_only": "Compatible",
-    "violates_non_allowed": "Non-compatible"
+    "Compatible": "Compatible",
+    "Noncompatible": "Non-compatible"
 }
 experiment_map = {
     'G_i1': 'iMet_G_DMSO',
@@ -40,10 +40,10 @@ for sample in experiments:
         group_counts['Sample'] = sample
         # 2) General stats (allowed vs non-allowed across *all vectors*)
         # Total counts of FP and FN
-        total_FP = summary_df["FP_nonallowed_1violation"].sum()
-        total_FN = summary_df["FN_allowed_0mismatch"].sum()
-        total_TP = summary_df["TP_allowed_1match"].sum()
-        total_TN = summary_df["TN_nonallowed_0match"].sum()
+        total_FP = summary_df["FP"].sum()
+        total_FN = summary_df["FN"].sum()
+        total_TP = summary_df["TP"].sum()
+        total_TN = summary_df["TN"].sum()
 
         # Total sites
         allowed_sites_total = int(summary_df["allowed_sites"].iloc[0])   # same for all vecs
