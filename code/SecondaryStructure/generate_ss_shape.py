@@ -62,7 +62,29 @@ def plot_varna_react(seq, reactivities, fc, name='example'):
 #AGCAGAGTGGCGCAGCGGAAGCGTGCTGGGCCCATAACCCAGAGGTCGATGGATCTAAACCATCCTCTGCTACCA
 sequence = "AGCAGAGTGGCGCAGCGGAAGCGTGCTGGGCCCATAACCCAGAGGTCGATGGATCTAAACCATCCTCTGCTACCA"
 # Reactivities
-react_file="./reac.txt"
+folder="./Reactivities"
+tto="NAI"
+selection = sys.argv[1]
+subsetting = sys.argv[2]
+
+if selection_origin = "g":
+    control="G_i1" #
+    if tto == "NAI":
+        comparison = "G_i2"
+    elif tto == "DMS":
+        comparison = "G_i3"
+elif selection_origin = "m1g":
+    control="G_i4" #
+    if tto == "NAI":
+        comparison = "G_i6"
+    elif tto == "DMS":
+        comparison = "G_i7"
+
+if len(subsetting) > 0:
+    control=f"{control}_{subsetting}"
+    comparison=f"{comparison}_{subsetting}"
+
+react_file=f"{folder}/{TTO}/iMet-CAT-2-1\(iMet-CAT\)_{control}-{comparison}.varna"
 reactivities = []
 with open(react_file, 'r') as fn:
     lines = fn.readlines()
